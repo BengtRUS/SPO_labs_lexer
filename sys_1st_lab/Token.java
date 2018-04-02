@@ -2,16 +2,16 @@ package sys_1st_lab;
 
 public class Token {
 
-String s;
+	String s;
 
-String value;
+	String value;
 
-Token(String type, String val) {
+	Token(String type, String val) {
 
-s = type;
+		s = type;
 
-value = val;
+		value = val;
 
-}
+	}
 
 }
