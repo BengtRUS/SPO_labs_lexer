@@ -2,7 +2,7 @@ package sys_1st_lab;
 
 import java.util.Scanner;
 
-public class test {
+public class Test {
 
 	public static void main(String[] args) {
 		Scanner in = new Scanner(System.in);
@@ -13,6 +13,7 @@ public class test {
 			str = in.nextLine();
 		}
 		Lexems.showList(Lexems.makeTokenList(str));
+		Parcer.parce(str);
 	}
 
 }
