@@ -1,6 +1,7 @@
 package sys_1st_lab;
 
 import java.util.EmptyStackException;
+import java.util.LinkedList;
 import java.util.NoSuchElementException;
 import java.util.Queue;
 
@@ -8,7 +9,6 @@ public class Parser {
 	private static Token currentToken;
 	private static Queue<Token> tokens;
 	public static int counter=0;
-	public static final String RED = "\u001B[31m";
 	static StringBuffer inSt = new StringBuffer();
 	
 	public static void parce(String in) {
@@ -243,5 +243,9 @@ public class Parser {
 		}
 
 		remove();
+	}
+	static void createVarTable(Queue<Token> tokens){
+		LinkedList<Token> list = (LinkedList<Token>) tokens;
+		
 	}
 }

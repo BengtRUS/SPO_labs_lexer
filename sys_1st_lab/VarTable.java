@@ -2,6 +2,7 @@ package sys_1st_lab;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.NoSuchElementException;
 public class VarTable{
 	
 	Map<Integer,ArrayList<Variable>> table = new HashMap<Integer,ArrayList<Variable>>();
@@ -24,9 +25,11 @@ public class VarTable{
 		Variable var = new Variable(name, 0, vis);
 		int index = check(var);
 		if(index!=-1){
-			return (table.get(vis).get(index));
-		} else
-		return null;
+			return (table.get(checkVis(var)).get(index));
+		} else{
+			throw new NoSuchElementException();
+		}
+		
 		
 	}
 	private int check(Variable var){
@@ -38,6 +41,17 @@ public class VarTable{
 			}
 		}
 		return -1;
+		
+	}
+	private int checkVis(Variable var){
+			for(int i=var.visibility; i>=0; i--){
+				for(int j=0; j<table.get(i).size(); j++){
+					if(table.get(i).get(j).n.equals(var.n)){
+						return i;
+					}
+				}
+			}
+			return -1;
 		
 	}
 	public void put(String n, int v, int vis){
