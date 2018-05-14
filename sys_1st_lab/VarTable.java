@@ -1,4 +1,4 @@
-package sys_1st_lab;
+/*package sys_1st_lab;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -62,4 +62,4 @@ public class VarTable{
 	}
 	
 	
-}
+}*/

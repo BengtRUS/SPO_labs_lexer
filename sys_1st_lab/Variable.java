@@ -1,11 +1,11 @@
 package sys_1st_lab;
 public class Variable {
-	String n;
-	int visibility;
+	String name;
+	String type;
 	int value;
-	Variable(String n, int value, int v){
-		this.n=n;
+	Variable(String n, int value, String type){
+		name=n;
 		this.value = value;		
-		visibility = v;
+		this.type = type;
 	}
 }

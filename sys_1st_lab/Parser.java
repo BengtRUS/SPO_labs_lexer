@@ -16,6 +16,7 @@ public class Parser {
 		inSt.insert(0, in);
 		lang();
 		System.out.println("OK");
+		
 	}
 	
 
@@ -244,8 +245,5 @@ public class Parser {
 
 		remove();
 	}
-	static void createVarTable(Queue<Token> tokens){
-		LinkedList<Token> list = (LinkedList<Token>) tokens;
-		
-	}
+	
 }
