@@ -19,11 +19,12 @@ public class StackString {
 		addIn();
 		stack = reverse(stack);
 		makePoliz();
-		showPoliz();
+		//showPoliz();
 		/*while(!stack.isEmpty()){
 			s+=(stack.pop().value)+" ";
 		}*/
 		//print(stack);
+		
 		return stack;
 		
 	}
@@ -42,13 +43,13 @@ public class StackString {
 				if(found){
 					stack.push(currentToken);
 				} else {
-					table.add(new Variable(currentToken.value, 0, "Integer"));
+					table.add(new Variable(currentToken.value, null, "Integer"));
 					stack.push(currentToken);
 				}
-			} else if(!currentToken.s.equals("WHILE_KW")){
+			} else 
 				if(checkDeadlock(currentToken))	{
 					deadlock.push(currentToken);
-				}
+				
 			}
 			
 			
@@ -90,6 +91,9 @@ public class StackString {
 					stack.push(deadlock.pop());
 				} else prior=false;
 			}
+		} else if((last.s.equals("WHILE_KW"))||(last.s.equals("FU_ONE"))||(last.s.equals("FU_TWO"))){
+			stack.push(last);
+			return false;
 		}
 		return true;	
 		
@@ -113,7 +117,19 @@ public class StackString {
 			priority=1;
 			break;
 		}
+		case("FU_ONE"):{
+			priority=0;
+			break;
+		}
+		case("FU_TWO"):{
+			priority=0;
+			break;
+		}
 		case("Space"):{
+			priority=0;
+			break;
+		}
+		case("PRINT"):{
 			priority=0;
 			break;
 		}
@@ -154,6 +170,9 @@ public class StackString {
 		 Stack<Token> box = new Stack<Token>();
 		 while(!stack.isEmpty()){
 			 box.push(stack.pop());
+			 
+			 
+			 //assign
 			 if(box.peek().s.equals("ASSIGN_OP")){
 				 box.pop();
 				 int f=0;
@@ -162,6 +181,10 @@ public class StackString {
 				 f=findInTable(box.peek().value);
 				 String val = box.pop().value;
 					 table.set(f, new Variable(val, number, "Integer"));
+					 
+					 
+					 
+					 //Operation
 			 } else if(box.peek().s.equals("OP")){
 				 String vall = box.pop().value;
 				 int s1 = getDigit(box.pop().value);
@@ -172,7 +195,7 @@ public class StackString {
 						 break;
 					 }
 					 case("-"):{
-						 box.push(new Token("DIGIT", String.valueOf(s1-s2)));
+						 box.push(new Token("DIGIT", String.valueOf(s2-s1)));
 						 break;
 					 }
 					 case("*"):{
@@ -184,6 +207,10 @@ public class StackString {
 						 break;
 					 }
 				 }
+				 
+				 
+				 
+				 //COMP
 			 } else if(box.peek().s.equals("COMP")){
 				 String vall = box.pop().value;
 				 int s1 = getDigit(box.pop().value);
@@ -207,23 +234,122 @@ public class StackString {
 						 break;
 					 }
 				 }
+				 
+				 
+				 
+				 //do
 			 } else if(box.peek().s.equals("LABEL_DO")){
 				 if(!Boolean.valueOf(box.pop().value)){
 					 while(!stack.peek().s.equals("LABEL_END")){
 						 stack.pop();
 					 }
 					 stack.pop();
+					 poliz.set(getEndIndex(),new Token("Space", " "));
 				 }
-			 } else if(box.peek().s.equals("LABEL_END")){
-				 int it = Integer.parseInt(box.pop().value);
+				
+				 
+				 
+				 
+				 //end				 			 
+			 } else if(box.peek().s.equals("LABEL_END")){				 
+				 int it = getEndIndex();
+				// System.out.println(it);
 				 do{
-					 System.out.println(poliz.get(it).s+" "+poliz.get(it).value);
+					 //System.out.println(poliz.get(it).s+" "+poliz.get(it).value);
 					 stack.push(poliz.get(it));
-					 it++;
-				 } while(!poliz.get(it).s.equals("LABEL_END"));
+					 it--;
+				 } while(!poliz.get(it).s.equals("WHILE_KW"));
+				 
+				 
+				 
+				 //1 func				 
+			 } else if(box.peek().s.equals("FU_ONE")){
+				 box.push(stack.pop());
+				 Token s1 = box.pop();
+				 String vall = box.pop().value;
+
+				 switch(vall){
+				 case("print "):{
+					 System.out.println(s1.value+"="+table.get(findInTable(s1.value)).value);
+					 break;
+				 }
+				 case("llcreate "):{
+					 int a = findInTable(s1.value);
+					 table.remove(findInTable(s1.value));
+					 if(a!=-1){
+						 table.add(a, new Variable(s1.value,new MyLinkedList(),"LinkedList"));
+					 } else{
+						 table.add(new Variable(s1.value,new MyLinkedList(),"LinkedList"));
+					 }
+					 break;
+				 }
+				 case("llprint "):{
+					 MyLinkedList list = (MyLinkedList) table.get(findInTable(s1.value)).value;
+					 list.print();
+					 break;
+				 }
+				 case("hscreate "):{
+					 int a = findInTable(s1.value);
+					 table.remove(findInTable(s1.value));
+					 if(a!=-1){
+						 table.add(a, new Variable(s1.value,new MyHashSet(),"HashSet"));
+					 } else{
+						 table.add(new Variable(s1.value,new MyHashSet(),"HashSet"));
+					 }
+					 break;
+				 }
+			 }
+				 
+				 
+				 
+				 //2 func				 
+			 } else if(box.peek().s.equals("FU_TWO")){
+				 box.push(stack.pop());
+				 box.push(stack.pop());
+				 Token s1 = box.pop();
+				 Token s2 = box.pop();
+				 String vall = box.pop().value;
+				 MyLinkedList list = null;
+				 MyHashSet set = null;
+				 try{
+					 list = (MyLinkedList) table.get(findInTable(s2.value)).value;
+				 } catch(ClassCastException e){
+					 set = (MyHashSet) table.get(findInTable(s2.value)).value;
+				 }
+				 switch(vall){
+				 case("lladd "):{
+					 list.add(table.get(findInTable(s1.value)));
+					 break;
+				 }
+				 case("llget "):{
+					 Variable hmm = (Variable) list.get(Integer.parseInt(s1.value));
+					 System.out.println(hmm.type+" "+hmm.name+"="+hmm.value);
+					 break;
+				 }
+				 case("llremove "):{
+					 list.remove(Integer.parseInt(s1.value));
+					 break;
+				 }
+				 case("llcontains "):{
+					 System.out.println(list.isContains(table.get(findInTable(s1.value))));
+					 break;
+				 }
+				 case("hsadd "):{
+					 set.add(table.get(findInTable(s1.value)));
+					 break;
+				 }
+				 case("hsremove "):{
+					 set.remove(table.get(findInTable(s1.value)));
+					 break;
+				 }
+				 case("hscontains "):{
+					 System.out.println(set.isContains(table.get(findInTable(s1.value))));
+					 break;
+				 }
+			 }
 			 }
 		 }
-		 print(box);
+		 //print(box);
 		return 0; 
 	 }
 	 private int findInTable(String s){
@@ -239,7 +365,7 @@ public class StackString {
 		 try{
 			 number = Integer.parseInt(s);
 		 } catch(NumberFormatException e1){
-			 number = table.get(findInTable(s)).value;
+			 number = (Integer) table.get(findInTable(s)).value;
 		 }
 		 return number;
 	 }
@@ -249,14 +375,13 @@ public class StackString {
 	 //////////////////////////////////////////////////////
 	 private void makePoliz(){
 		 Stack<Token> cpStack= (Stack<Token>) stack.clone();
-		 int i=0,k=0,j=0;
+		 int i=0,k=0;
 		 while(!cpStack.isEmpty()){
 			 if(cpStack.peek().s.equals("WHILE_KW")){
 				 k=i;
 			 } else if(cpStack.peek().s.equals("LABEL_END")){
-				 j=i;
+				 cpStack.push(new Token(cpStack.pop().s, String.valueOf(k)));
 				 poliz.add(cpStack.pop());
-				 poliz.set(j, new Token("LABEL_END", String.valueOf(k)));
 				 i++;
 				 continue;
 			 }
@@ -265,9 +390,18 @@ public class StackString {
 		 }
 		
 	 }
-	 private void showPoliz(){
+	 public void showPoliz(){
 		 for(int i=0;i<poliz.size();i++){
 			 System.out.println(poliz.get(i).s+" "+poliz.get(i).value);
 		 }
+	 }
+	 private int getEndIndex(){
+		 for(int i=0;i<poliz.size();i++){
+			 if(poliz.get(i).s.equals("LABEL_END")) {
+				 return i;
+			 }
+		 }
+		return -1;
+		 
 	 }
 }

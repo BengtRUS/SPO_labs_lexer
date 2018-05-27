@@ -4,17 +4,19 @@ import java.util.Queue;
 import java.util.regex.*;
 public class Lexems {
 enum LexemType {
-	WHILE_KW("WHILE_KW", Pattern.compile("^while $")),
-	DO_KW("DO_KW", Pattern.compile("^do $")),
-	END_KW("END_KW", Pattern.compile("^end.$")),
-	VAR( "VAR", Pattern.compile("^[a-z]+[a-z0-9]*$")),
-	DIGIT( "DIGIT", Pattern.compile("^0|[1-9][0-9]*$")),
-	OP( "OP", Pattern.compile("^[+]|[-]|[\\*]|[/]$")),	
-	COMP("COMP", Pattern.compile("^(>)|(<)|(==)|(!=)$")),
-	ASSIGN_OP( "ASSIGN_OP", Pattern.compile("^=$")),
-	BR_O("BR_O", Pattern.compile("^\\($")),
-	BR_C("BR_C", Pattern.compile("^\\)$")),
-	SPACE("Space", Pattern.compile("^ *$"));
+	WHILE_KW("WHILE_KW", Pattern.compile("^while $")),//
+	DO_KW("DO_KW", Pattern.compile("^do $")),//
+	END_KW("END_KW", Pattern.compile("^end.$")),//
+	VAR( "VAR", Pattern.compile("^[a-z]+[a-z0-9]*$")),//
+	DIGIT( "DIGIT", Pattern.compile("^0|[1-9][0-9]*$")),//
+	OP( "OP", Pattern.compile("^[+]|[-]|[\\*]|[/]$")),	//<<<<<<<<
+	COMP("COMP", Pattern.compile("^(>)|(<)|(==)|(!=)$")),//<<<<<<<<<<
+	ASSIGN_OP( "ASSIGN_OP", Pattern.compile("^=$")),//<<<<<<<<<<<
+	BR_O("BR_O", Pattern.compile("^\\($")),//
+	BR_C("BR_C", Pattern.compile("^\\)$")),//
+	SPACE("Space", Pattern.compile("^ *$")),//
+	FU_ONE("FU_ONE", Pattern.compile("^(print )|(llprint )|(llcreate )|(hscreate )$")),
+	FU_TWO("FU_TWO", Pattern.compile("^(lladd )|(llget )|(llremove )|(llcontains )|(hsadd )|(hsremove )|(hscontains )$"));
 	
 	String type;
 	Pattern pattern;
@@ -45,6 +47,7 @@ enum LexemType {
 			in = removeCharAt(in,0);
 			if((type=="Space")&&(in.length()>0)&&(type!=parce(temp_st+(in.charAt(0))))) {
 				temp_st="";
+				tok.offer(new Token(type,temp_st));
 			}
 			else if((in.length()>0)&&(isPriority(parce(temp_st+(in.charAt(0)))))){
 				tok.offer(new Token(parce(temp_st+(in.charAt(0))),temp_st+(in.charAt(0))));
@@ -93,6 +96,10 @@ enum LexemType {
 		switch(s1){
 			case "WHILE_KW":
 				return true;
+			case "FU_ONE":
+				return true;
+			case "FU_TWO":
+				return true;
 			case "DO_KW":
 				return true;
 			case "END_KW":
@@ -120,7 +127,7 @@ enum LexemType {
 			 }
 			 type = show.element().s;
 			 value = show.element().value;
-			 
+			 if (type=="Space") continue;
 			 System.out.println("Type= "+type+"  "+"Value= "+value);
 		 } while (show.poll() != null);
 	 }

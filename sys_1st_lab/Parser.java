@@ -22,6 +22,10 @@ public class Parser {
 
 	static void match() {
 		currentToken = tokens.element();
+		while(currentToken.s.equals("Space")){
+			tokens.poll();
+			currentToken = tokens.element();
+		}
 	}
 
 	static void remove() {
@@ -46,17 +50,51 @@ public class Parser {
 				} catch (IllegalArgumentException e) {
 					try{
 						while_c();
-					} catch (NoSuchElementException e1) {
-						
+					} catch (IllegalArgumentException e1) {
+						try{
+							fu();
+						} catch (NoSuchElementException e2) {
+							
+					}
 				}
 			}
-				try{
-					expr();
-				}
-				catch (NoSuchElementException e3){
-				}
+				expr();
+			
 
 	}
+
+	private static void fu() {
+		try {
+			fu_one();
+		 } catch (IllegalArgumentException e) {
+				try{
+					fu_two();
+				} catch (NoSuchElementException e2) {
+					
+				}
+		
+		 }
+	}
+
+
+	private static void fu_one() {
+		FU_ONE();
+		VAR();
+		
+	}
+
+
+	private static void fu_two() {
+		FU_TWO();
+		VAR();
+		try{
+			VAR();
+		} catch (IllegalArgumentException e){
+			DIGIT();
+		}
+		
+	}
+
 
 	private static void while_c() {
 		WHILE_KW();
@@ -95,6 +133,9 @@ public class Parser {
 				op_value();
 			} catch (NoSuchElementException e) {
 			
+			}
+			catch (IllegalArgumentException e3){
+				
 			}
 		}
 		catch(NoSuchElementException e1){
@@ -244,6 +285,24 @@ public class Parser {
 		}
 
 		remove();
+	}
+	private static void FU_ONE() {
+		match();
+		if (!(currentToken.s.equals("FU_ONE"))) {
+			throw new IllegalArgumentException("Function expected, got " + currentToken.s+" at "+counter);
+		}
+
+		remove();
+		
+	}
+	private static void FU_TWO() {
+		match();
+		if (!(currentToken.s.equals("FU_TWO"))) {
+			throw new IllegalArgumentException("Function expected, got " + currentToken.s+" at "+counter);
+		}
+
+		remove();
+		
 	}
 	
 }
